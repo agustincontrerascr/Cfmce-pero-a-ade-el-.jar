@@ -1,4 +1,3 @@
-name: Build Mod Forge 1.8.9
 
 on:
   workflow_dispatch:
