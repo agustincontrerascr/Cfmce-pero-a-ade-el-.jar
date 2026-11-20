@@ -1,27 +1,35 @@
-name: Build Minecraft 1.8.9 mod
+name: Build MrCrayfish Furniture CE (Forge 1.8.9)
+
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "1.8.9/**"
-      - ".github/workflows/build.yml"
+    branches: [ main, master ]
+  pull_request:
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "8"
-      - name: Set up Gradle wrapper
-        run: |
-          gradle wrapper --gradle-version 2.14.1
-          chmod +x gradlew
-      - name: Build 1.8.9 mod
-        working-directory: 1.8.9
-        run: ../gradlew --no-daemon build
-      - uses: actions/upload-artifact@v4
+          java-version: '8'
+
+      - name: Set up Gradle 2.14.1
+        uses: gradle/gradle-build-action@v2
         with:
-          name: cfmce-minecraft-1.8.9
-          path: 1.8.9/build/libs/*.jar
+          gradle-version: 2.14.1
+
+      - name: Build mod JAR
+        run: gradle --no-daemon clean build
+
+      - name: Upload compiled mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: MrCrayfishFurnitureCE-Forge-1.8.9
+          path: build/libs/*.jar
+          if-no-files-found: error
