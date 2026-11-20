@@ -25,11 +25,12 @@ jobs:
           gradle-version: 2.14.1
 
       - name: Build mod JAR
-        run: gradle --no-daemon clean build
+  run: gradle --no-daemon clean build
+  working-directory: ./CFMCE-1.8.9-build
 
       - name: Upload compiled mod
         uses: actions/upload-artifact@v4
         with:
           name: MrCrayfishFurnitureCE-Forge-1.8.9
-          path: build/libs/*.jar
+          path: CFMCE-1.8.9-build/build/libs/*.jar
           if-no-files-found: error
