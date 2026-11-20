@@ -1,4 +1,5 @@
-name: Build Minecraft 1.8.9 mod
+- name: Build mod JAR
+  run: gradle --no-daemon clean build
 on:
   workflow_dispatch:
   push:
