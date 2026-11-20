@@ -1,36 +1,37 @@
-name: Build MrCrayfish Furniture CE (Forge 1.8.9)
+name: Build Furniture CE
 
 on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
-  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
-      - name: Checkout source
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 8
+      - name: Java 8
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '8'
 
-      - name: Set up Gradle 2.14.1
+      - name: Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 2.14.1
+          gradle-version: '2.14.1'
 
-      - name: Build mod JAR
-  run: gradle --no-daemon clean build
-  working-directory: ./CFMCE-1.8.9-build
+      - name: Compile mod
+        run: |
+          cd CFMCE-1.8.9-build
+          gradle --no-daemon build
 
-      - name: Upload compiled mod
+      - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
-          name: MrCrayfishFurnitureCE-Forge-1.8.9
-          path: build/libs/*.jar
-          if-no-files-found: error with exit code 1.
+          name: Furniture-CE-1.8.9
+          path: CFMCE-1.8.9-build/build/libs/*.jar
+          if-no-files-found: error
