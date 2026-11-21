@@ -1,7 +1,11 @@
-name: Construir mod
+name: Build Minecraft 1.8.9 mod
 on:
   workflow_dispatch:
   push:
+    paths:
+      - "1.8.9/**"
+      - "build.gradle"
+      - ".github/workflows/build.yml"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,14 +14,10 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '8'
-      - name: Descomprimir y compilar
-        run: |
-          unzip -q FurnitureModels-1.12.2.zip
-          cd FurnitureModels-1.12.2
-          chmod +x gradlew
-          ./gradlew build --no-daemon
+          java-version: "8"
+      - name: Build 1.8.9 mod
+        run: gradle --no-daemon clean build
       - uses: actions/upload-artifact@v4
         with:
-          name: FurnitureModels-jar
-          path: FurnitureModels-1.12.2/build/libs/*.jar
+          name: cfmce-minecraft-1.8.9
+          path: build/libs/*.jar
