@@ -1,11 +1,7 @@
-name: Build Minecraft 1.8.9 mod
+name: Compilar mod
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - "1.8.9/**"
-      - "build.gradle"
-      - ".github/workflows/build.yml"
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,10 +10,30 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "8"
-      - name: Build 1.8.9 mod
-        run: gradle --no-daemon clean build
-      - uses: actions/upload-artifact@v4
+          java-version: '8'
+      - name: Compilar
+        shell: bash
+        run: |
+          set -o pipefail
+          ls -la
+          for z in CFMCE*.zip; do unzip -q -o "$z" -d "x_$z"; done
+          F=$(find . -path '*CFMCE-1.12.2/src/main/java/*MrCrayfishFurnitureModCE.java' | head -1)
+          if [ -z "$F" ]; then echo "NO ENCONTRE el proyecto. Sube el archivo CFMCE-1.12.2.zip"; exit 1; fi
+          P="${F%%/src/*}"
+          echo "PROJ=$P" >> "$GITHUB_ENV"
+          cd "$P"
+          chmod +x gradlew
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/build-log.txt"
+      - name: Subir el mod
+        uses: actions/upload-artifact@v4
         with:
-          name: cfmce-minecraft-1.8.9
-          path: build/libs/*.jar
+          name: CFMCE-jar
+          path: ${{ env.PROJ }}/build/libs/*.jar
+          if-no-files-found: ignore
+      - name: Subir el registro de errores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: log-de-errores
+          path: build-log.txt
+          if-no-files-found: ignore
